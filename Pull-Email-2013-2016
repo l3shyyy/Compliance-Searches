@@ -1,0 +1,13 @@
+Step 1 - Export all email addresses that you want to search (all of them): 
+Get-Mailbox -ResultSize Unlimited | Select-Object DisplayName, SamAccountName, PrimarySmtpAddress | Sort-Object PrimarySmtpAddress | Export-Csv "c:\temp\user_mailboxes.csv" -NoTypeInformation -Encoding UTF8
+
+** Ensure that PrimarySMTP shows up on the first line ** 
+
+Step 2 (Import the CSV back into powershell - Can probably store this as a variable):
+Import-Csv ".\user_mailboxes.csv"
+
+Step 3 Search for contents that you expect): 
+Import-Csv "C:\temp\user_mailboxes.csv" | ForEach-Object {Search-Mailbox $_.PrimarySmtpAddress -SearchQuery 'Subject:"Contract Revision: Please Sign & Return Completed Document"' -EstimateResultOnly} 
+
+Step 4: If you see reasonable matches (not like 400 items, delete!) 
+Import-Csv "C:\temp\user_mailboxes.csv" | ForEach-Object {Search-Mailbox $_.PrimarySmtpAddress -SearchQuery 'Subject:"Contract Revision: Please Sign & Return Completed Document"' -DeleteContent -Force}
